@@ -92,8 +92,10 @@ export async function getUserFavorites(email: string): Promise<number[]> {
 }
 
 export async function setUserFavorites(email: string, favorites: number[]): Promise<void> {
-  await prisma.user.updateMany({
-    where: { email: { equals: email, mode: "insensitive" } },
-    data: { favorites },
-  })
+  try {
+    await prisma.user.updateMany({
+      where: { email: { equals: email, mode: "insensitive" } },
+      data: { favorites },
+    })
+  } catch { /* ignore — favorites are non-critical */ }
 }

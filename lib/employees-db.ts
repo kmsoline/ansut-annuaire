@@ -34,22 +34,24 @@ export async function getEmployee(id: number): Promise<Employee | null> {
   }
 }
 
-export async function createEmployee(data: Omit<Employee, "id">): Promise<Employee> {
-  const row = await prisma.employee.create({
-    data: {
-      nom: data.nom ?? null,
-      fonction: data.fonction ?? null,
-      extension: data.extension ?? null,
-      contact: data.contact ?? null,
-      email: data.email ?? null,
-      photo: data.photo ?? null,
-      direction: data.direction ?? null,
-      site: data.site ?? null,
-      manager: data.manager ?? null,
-      favoris: data.favoris ?? false,
-    },
-  })
-  return toEmployee(row)
+export async function createEmployee(data: Omit<Employee, "id">): Promise<Employee | null> {
+  try {
+    const row = await prisma.employee.create({
+      data: {
+        nom: data.nom ?? null,
+        fonction: data.fonction ?? null,
+        extension: data.extension ?? null,
+        contact: data.contact ?? null,
+        email: data.email ?? null,
+        photo: data.photo ?? null,
+        direction: data.direction ?? null,
+        site: data.site ?? null,
+        manager: data.manager ?? null,
+        favoris: data.favoris ?? false,
+      },
+    })
+    return toEmployee(row)
+  } catch { return null }
 }
 
 export async function updateEmployee(id: number, data: Partial<Omit<Employee, "id">>): Promise<Employee | null> {

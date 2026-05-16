@@ -28,5 +28,6 @@ export async function POST(req: Request) {
 
   const newSite: Site = { id, name, address: address ?? "", lat: Number(lat), lng: Number(lng), color: color ?? "#1d4ed8", ...(body.image ? { image: body.image } : {}) }
   const created = await createSite(newSite)
+  if (!created) return NextResponse.json({ error: "Erreur base de données" }, { status: 500 })
   return NextResponse.json(created, { status: 201 })
 }

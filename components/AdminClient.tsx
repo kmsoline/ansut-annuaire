@@ -493,10 +493,10 @@ function StatistiquesTab() {
   useEffect(() => {
     Promise.all([
       fetch("/api/employees").then((r) => r.json()),
-      fetch("/api/users").then((r) => r.json()),
+      fetch("/api/users").then((r) => r.json()).catch(() => []),
     ]).then(([emps, users]) => {
-      setEmployees(emps)
-      setUserCount(users.length)
+      if (Array.isArray(emps)) setEmployees(emps)
+      if (Array.isArray(users)) setUserCount(users.length)
       setLoading(false)
     })
   }, [])

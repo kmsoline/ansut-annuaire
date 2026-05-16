@@ -4,6 +4,7 @@
 declare module "@vercel/blob" {
   export interface PutBlobResult {
     url: string
+    downloadUrl: string
     pathname: string
     contentType: string
     contentDisposition: string

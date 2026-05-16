@@ -30,11 +30,13 @@ export async function getSite(id: string): Promise<Site | null> {
   }
 }
 
-export async function createSite(data: Site): Promise<Site> {
-  const row = await prisma.site.create({
-    data: { id: data.id, name: data.name, address: data.address ?? "", lat: data.lat, lng: data.lng, color: data.color ?? "#1d4ed8", image: data.image ?? "" },
-  })
-  return toSite(row)
+export async function createSite(data: Site): Promise<Site | null> {
+  try {
+    const row = await prisma.site.create({
+      data: { id: data.id, name: data.name, address: data.address ?? "", lat: data.lat, lng: data.lng, color: data.color ?? "#1d4ed8", image: data.image ?? "" },
+    })
+    return toSite(row)
+  } catch { return null }
 }
 
 export async function updateSite(id: string, data: Partial<Site>): Promise<Site | null> {
