@@ -1,18 +1,33 @@
 import { prisma } from "@/lib/prisma"
 import { Site } from "@/lib/types"
+import fs from "fs"
+import path from "path"
 
 function toSite(row: { id: string; name: string; address: string; lat: number; lng: number; color: string; image: string | null }): Site {
   return { ...row, image: row.image ?? undefined }
 }
 
+function fromJson(): Site[] {
+  try {
+    const file = path.join(process.cwd(), "data", "sites.json")
+    return JSON.parse(fs.readFileSync(file, "utf-8")) as Site[]
+  } catch { return [] }
+}
+
 export async function getSites(): Promise<Site[]> {
-  const rows = await prisma.site.findMany({ orderBy: { name: "asc" } })
-  return rows.map(toSite)
+  try {
+    const rows = await prisma.site.findMany({ orderBy: { name: "asc" } })
+    return rows.map(toSite)
+  } catch { return fromJson() }
 }
 
 export async function getSite(id: string): Promise<Site | null> {
-  const row = await prisma.site.findUnique({ where: { id } })
-  return row ? toSite(row) : null
+  try {
+    const row = await prisma.site.findUnique({ where: { id } })
+    return row ? toSite(row) : null
+  } catch {
+    return fromJson().find((s) => s.id === id) ?? null
+  }
 }
 
 export async function createSite(data: Site): Promise<Site> {

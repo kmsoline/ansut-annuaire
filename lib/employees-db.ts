@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { Employee } from "@/lib/types"
+import fs from "fs"
+import path from "path"
 
 function toEmployee(row: {
   id: number; nom: string|null; fonction: string|null; extension: string|null;
@@ -9,14 +11,27 @@ function toEmployee(row: {
   return { ...row, favoris: row.favoris }
 }
 
+function fromJson(): Employee[] {
+  try {
+    const file = path.join(process.cwd(), "data", "employees.json")
+    return JSON.parse(fs.readFileSync(file, "utf-8")) as Employee[]
+  } catch { return [] }
+}
+
 export async function getEmployees(): Promise<Employee[]> {
-  const rows = await prisma.employee.findMany({ orderBy: { id: "asc" } })
-  return rows.map(toEmployee)
+  try {
+    const rows = await prisma.employee.findMany({ orderBy: { id: "asc" } })
+    return rows.map(toEmployee)
+  } catch { return fromJson() }
 }
 
 export async function getEmployee(id: number): Promise<Employee | null> {
-  const row = await prisma.employee.findUnique({ where: { id } })
-  return row ? toEmployee(row) : null
+  try {
+    const row = await prisma.employee.findUnique({ where: { id } })
+    return row ? toEmployee(row) : null
+  } catch {
+    return fromJson().find((e) => e.id === id) ?? null
+  }
 }
 
 export async function createEmployee(data: Omit<Employee, "id">): Promise<Employee> {
@@ -55,16 +70,12 @@ export async function updateEmployee(id: number, data: Partial<Omit<Employee, "i
       },
     })
     return toEmployee(row)
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
 export async function deleteEmployee(id: number): Promise<Employee | null> {
   try {
     const row = await prisma.employee.delete({ where: { id } })
     return toEmployee(row)
-  } catch {
-    return null
-  }
+  } catch { return null }
 }

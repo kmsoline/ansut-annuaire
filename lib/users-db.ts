@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { randomUUID } from "crypto"
+import fs from "fs"
+import path from "path"
 
 export type UserRecord = {
   id: string
@@ -14,21 +16,38 @@ function toRecord(row: { id: string; email: string; name: string; passwordHash: 
   return { ...row, role: row.role as "admin" | "user" }
 }
 
+function usersFromJson(): UserRecord[] {
+  try {
+    const file = path.join(process.cwd(), "data", "users.json")
+    return JSON.parse(fs.readFileSync(file, "utf-8")) as UserRecord[]
+  } catch { return [] }
+}
+
 export async function getUsers(): Promise<UserRecord[]> {
-  const rows = await prisma.user.findMany({ orderBy: { name: "asc" } })
-  return rows.map(toRecord)
+  try {
+    const rows = await prisma.user.findMany({ orderBy: { name: "asc" } })
+    return rows.map(toRecord)
+  } catch { return usersFromJson() }
 }
 
 export async function getUserByEmail(email: string): Promise<UserRecord | undefined> {
-  const row = await prisma.user.findFirst({
-    where: { email: { equals: email, mode: "insensitive" } },
-  })
-  return row ? toRecord(row) : undefined
+  try {
+    const row = await prisma.user.findFirst({
+      where: { email: { equals: email, mode: "insensitive" } },
+    })
+    return row ? toRecord(row) : undefined
+  } catch {
+    return usersFromJson().find((u) => u.email.toLowerCase() === email.toLowerCase())
+  }
 }
 
 export async function getUserById(id: string): Promise<UserRecord | undefined> {
-  const row = await prisma.user.findUnique({ where: { id } })
-  return row ? toRecord(row) : undefined
+  try {
+    const row = await prisma.user.findUnique({ where: { id } })
+    return row ? toRecord(row) : undefined
+  } catch {
+    return usersFromJson().find((u) => u.id === id)
+  }
 }
 
 export async function createUser(data: Omit<UserRecord, "id">): Promise<UserRecord> {
@@ -60,7 +79,11 @@ export async function deleteUser(id: string): Promise<boolean> {
 }
 
 export async function countAdmins(): Promise<number> {
-  return prisma.user.count({ where: { role: "admin" } })
+  try {
+    return await prisma.user.count({ where: { role: "admin" } })
+  } catch {
+    return usersFromJson().filter((u) => u.role === "admin").length
+  }
 }
 
 export async function getUserFavorites(email: string): Promise<number[]> {
