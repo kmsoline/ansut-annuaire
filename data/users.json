@@ -1,0 +1,16 @@
+[
+  {
+    "id": "admin-1",
+    "email": "aziz.camara@ansut.ci",
+    "name": "Abdel-Aziz CAMARA",
+    "passwordHash": "$2b$10$MDn8aZSwcfifriY58ItrOu8cyO7j0Inqd.leGFnGrznOGXJJ0k78q",
+    "role": "admin"
+  },
+  {
+    "email": "kmsosnt@gmail.com",
+    "name": "aziz hassane",
+    "passwordHash": "$2b$10$SLzYMpa.MF7DNw8ndlLr/OOn7mSQyt5LzCjVuNQYo5lzj4rqMsL1q",
+    "role": "user",
+    "id": "719e4ef4-9c6a-4d95-a6ca-18ce15d3f3c5"
+  }
+]

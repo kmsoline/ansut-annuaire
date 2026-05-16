@@ -1,0 +1,29 @@
+[
+  {
+    "id": "siege",
+    "name": "Siège ANSUT",
+    "address": "Plateau, Abidjan",
+    "lat": 5.369947,
+    "lng": -3.985612,
+    "color": "#1d4ed8",
+    "image": ""
+  },
+  {
+    "id": "annexe",
+    "name": "Annexe ANSUT",
+    "address": "Cocody, Abidjan",
+    "lat": 5.371207179174473,
+    "lng": -3.985789676596503,
+    "color": "#059669",
+    "image": ""
+  },
+  {
+    "id": "postel",
+    "name": "Postel ANSUT",
+    "address": "Avenue Terrasson de Fougères, Plateau",
+    "lat": 5.325721,
+    "lng": -4.017678,
+    "color": "#7c3aed",
+    "image": ""
+  }
+]
