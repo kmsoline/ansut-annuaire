@@ -15,6 +15,7 @@ export async function POST(req: Request) {
   }
   const body = await req.json()
   const newEmp = await createEmployee({ ...body, favoris: false })
+  if (!newEmp) return NextResponse.json({ error: "Erreur base de données" }, { status: 500 })
   await appendLog({ adminEmail: session.user?.email ?? "admin", action: "create_employee", target: newEmp.nom ?? "" })
   return NextResponse.json(newEmp, { status: 201 })
 }

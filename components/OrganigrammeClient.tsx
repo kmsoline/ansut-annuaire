@@ -415,7 +415,6 @@ export default function OrganigrammePage() {
   }, [search, filterDir, DIRECTIONS, employees])
 
   const updateManager = useCallback(async (employeeId: number, newManager: string) => {
-    const snapshot = employees
     // Optimistic update
     setEmployees((prev) => prev.map((e) => e.id === employeeId ? { ...e, manager: newManager } : e))
     try {
@@ -426,9 +425,13 @@ export default function OrganigrammePage() {
       })
       if (!res.ok) throw new Error()
     } catch {
-      setEmployees(snapshot) // revert on error
+      // Revert by re-fetching fresh data from server
+      fetch("/api/employees")
+        .then((r) => r.json())
+        .then((data) => { if (Array.isArray(data)) setEmployees(data as Employee[]) })
+        .catch(() => {})
     }
-  }, [employees])
+  }, [])
 
   const dragCtx: DragCtx = {
     isAdmin,
@@ -566,6 +569,7 @@ export default function OrganigrammePage() {
 
       <EmployeeModal
         employee={selected}
+        allEmployees={employees}
         onClose={() => setSelected(null)}
         onSelectEmployee={(emp) => setSelected(emp)}
       />
