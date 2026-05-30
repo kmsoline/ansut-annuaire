@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from "next/server";
+import { checkAdminRole } from "@/lib/api-auth";
+import { dbSelectOne, dbUpdate, dbDelete } from "@/lib/db";
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await checkAdminRole())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await params;
+  const item = await dbSelectOne("portfolio_projects", `select=*&id=eq.${id}`);
+  if (!item) return NextResponse.json({ error: "Non trouvé" }, { status: 404 });
+  return NextResponse.json(item);
+}
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await checkAdminRole())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await params;
+  try {
+    const data = await request.json();
+    const payload: Record<string, unknown> = {};
+    const fields = ["slug","title","tag","category","description","year","img","sector","technologies","deliverables","results","published"];
+    for (const f of fields) if (data[f] !== undefined) payload[f] = data[f];
+    if (data.longDescription !== undefined) payload.long_description = data.longDescription;
+    if (data.long_description !== undefined) payload.long_description = data.long_description;
+    const updated = await dbUpdate("portfolio_projects", `id=eq.${id}`, payload);
+    return NextResponse.json(updated);
+  } catch { return NextResponse.json({ error: "Erreur mise à jour" }, { status: 500 }); }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await checkAdminRole())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await params;
+  await dbDelete("portfolio_projects", `id=eq.${id}`);
+  return NextResponse.json({ success: true });
+}

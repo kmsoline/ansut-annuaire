@@ -1,0 +1,13 @@
+{
+  "name": "DIME GROUPE",
+  "short_name": "DIME",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1f49",
+  "theme_color": "#243E8E",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
+
+
